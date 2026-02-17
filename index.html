@@ -65,7 +65,11 @@
                     <button id="logout-btn" class="icon-btn" title="Bloquear Billetera">🔐</button>
                 </div>
             </div>
-            <h1 id="current-wallet-title">Billetera Virtual</h1>
+            <div class="editable-title-container">
+                <img id="business-logo" class="business-logo" src="" alt="Logo Empresa">
+                <h1 id="current-wallet-title" class="editable-title">Billetera Virtual</h1>
+                <input type="text" id="business-name-input" style="display: none;" placeholder="Nombre de tu empresa">
+            </div>
             <div class="balance-card">
                 <div class="balance-info">
                     <p class="balance-label">Balance Total</p>
@@ -148,6 +152,32 @@
                     </div>
                     <button type="submit" class="primary-btn">Registrar Movimiento</button>
                 </form>
+            </div>
+
+            <div class="glass-section branding-section">
+                <h3>💼 Panel de Marca Corporativa</h3>
+                <div class="branding-controls">
+                    <div class="logo-uploader">
+                        <label>Logotipo de Empresa</label>
+                        <input type="file" id="logo-input" accept="image/*" class="primary-btn"
+                            style="padding: 10px; font-size: 0.8rem; background: var(--glass-bg);">
+                        <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.5rem;">Recomendado:
+                            200x80px (PNG transparente)</p>
+                    </div>
+                    <div class="theme-selector">
+                        <label>Identidad Visual (Temas)</label>
+                        <div class="theme-btns">
+                            <button class="theme-btn active" data-theme="default"
+                                style="border-color: #6366f1;">Antigravity</button>
+                            <button class="theme-btn" data-theme="corporate"
+                                style="border-color: #2563eb;">Corporativo</button>
+                            <button class="theme-btn" data-theme="minimal"
+                                style="border-color: #4b5563;">Minimalista</button>
+                            <button class="theme-btn" data-theme="emerald"
+                                style="border-color: #059669;">Esmeralda</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="glass-section savings-goals">

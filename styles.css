@@ -1,5 +1,6 @@
 :root {
     --primary-color: #6366f1;
+    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #0ea5e9 100%);
     --success-color: #10b981;
     --error-color: #ef4444;
     --bg-dark: #0f172a;
@@ -7,6 +8,26 @@
     --glass-border: rgba(255, 255, 255, 0.12);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+}
+
+/* Themes */
+body.theme-corporate {
+    --primary-color: #2563eb;
+    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    --accent-glow: rgba(37, 99, 235, 0.3);
+}
+
+body.theme-minimal {
+    --primary-color: #4b5563;
+    --primary-gradient: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+    --accent-glow: rgba(75, 85, 99, 0.3);
+}
+
+body.theme-emerald {
+    --primary-color: #059669;
+    --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --accent-glow: rgba(5, 150, 105, 0.3);
 }
 
 * {
@@ -56,7 +77,8 @@ body {
 .blob-2 {
     width: 350px;
     height: 350px;
-    background: #ec4899;
+    background: var(--primary-color);
+    filter: hue-rotate(45deg);
     bottom: 20%;
     right: 15%;
     animation-delay: -5s;
@@ -65,7 +87,8 @@ body {
 .blob-3 {
     width: 300px;
     height: 300px;
-    background: #0ea5e9;
+    background: var(--primary-color);
+    filter: hue-rotate(-45deg);
     bottom: 10%;
     left: 40%;
     animation-delay: -10s;
@@ -448,7 +471,7 @@ select:focus {
 .primary-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #0ea5e9 100%);
+    background: var(--primary-gradient);
     color: white;
     border: none;
     border-radius: 12px;
@@ -456,13 +479,13 @@ select:focus {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
     margin-top: 1rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px var(--accent-glow);
 }
 
 .primary-btn:hover {
     opacity: 0.9;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 6px 20px var(--accent-glow);
 }
 
 .primary-btn:active {
@@ -845,4 +868,100 @@ select:focus {
 
 .app-footer strong {
     color: var(--primary-color);
+}
+
+/* Branding Section */
+.branding-section {
+    grid-column: 1 / -1;
+    margin-bottom: 2rem;
+}
+
+.branding-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.logo-uploader {
+    flex: 1;
+    min-width: 250px;
+}
+
+.theme-selector {
+    flex: 1;
+    min-width: 250px;
+}
+
+.theme-btns {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.theme-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-btn.active {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* User Logo in Header */
+.business-logo {
+    max-height: 80px;
+    max-width: 200px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    display: none;
+    /* Only show if uploaded */
+}
+
+.editable-title-container {
+    margin-bottom: 2rem;
+}
+
+.editable-title {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.editable-title:hover {
+    color: var(--primary-color);
+}
+
+.editable-title:hover::after {
+    content: ' ✎';
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+#business-name-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: inherit;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    outline: none;
+    text-align: center;
 }

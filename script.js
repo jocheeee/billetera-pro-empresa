@@ -46,6 +46,18 @@ const StateManager = {
 
     getGoals(walletId) {
         return this.goals[walletId];
+    },
+
+    saveBranding(branding) {
+        localStorage.setItem('wallet_branding', JSON.stringify(branding));
+    },
+
+    getBranding() {
+        return JSON.parse(localStorage.getItem('wallet_branding')) || {
+            name: 'Billetera Virtual',
+            logo: '',
+            theme: 'default'
+        };
     }
 };
 
@@ -82,6 +94,15 @@ const goalsContainer = document.getElementById('goals-container');
 const recurringOptions = document.getElementById('recurring-options');
 const recurringDay = document.getElementById('recurring-day');
 const recurringTime = document.getElementById('recurring-time');
+
+// Branding Elements
+const logoInput = document.getElementById('logo-input');
+const businessLogoImg = document.getElementById('business-logo');
+const businessNameInput = document.getElementById('business-name-input');
+const walletTitleEl = document.getElementById('current-wallet-title');
+const themeBtns = document.querySelectorAll('.theme-btn');
+
+let branding = StateManager.getBranding();
 
 const loginOverlay = document.getElementById('login-overlay');
 const loginCard = document.querySelector('.login-card');
@@ -151,6 +172,89 @@ isRecurrent.addEventListener('change', () => {
         showLocalToast('Recurrencia desactivada', 'warning');
     }
 });
+
+// --- Branding Logic ---
+function initBranding() {
+    // Load Title
+    walletTitleEl.innerText = branding.name;
+
+    // Load Logo
+    if (branding.logo) {
+        businessLogoImg.src = branding.logo;
+        businessLogoImg.style.display = 'block';
+    }
+
+    // Load Theme
+    if (branding.theme) {
+        applyTheme(branding.theme);
+    }
+}
+
+function applyTheme(themeName) {
+    // Remove old theme classes
+    document.body.classList.remove('theme-corporate', 'theme-minimal', 'theme-emerald');
+
+    // Add new theme class if not default
+    if (themeName !== 'default' && themeName !== '') {
+        document.body.classList.add(`theme-${themeName}`);
+    }
+
+    // Update active button visual
+    themeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+    });
+
+    branding.theme = themeName;
+    StateManager.saveBranding(branding);
+}
+
+// Logo Upload Handler
+logoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const base64 = event.target.result;
+        branding.logo = base64;
+        businessLogoImg.src = base64;
+        businessLogoImg.style.display = 'block';
+        StateManager.saveBranding(branding);
+        showToast('Logotipo actualizado con éxito', 'success');
+    };
+    reader.readAsDataURL(file);
+});
+
+// Theme Button Handlers
+themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        applyTheme(btn.dataset.theme);
+        showToast(`Tema corporativo aplicado`, 'info');
+    });
+});
+
+// Editable Title Logic
+walletTitleEl.addEventListener('click', () => {
+    walletTitleEl.style.display = 'none';
+    businessNameInput.style.display = 'block';
+    businessNameInput.value = branding.name;
+    businessNameInput.focus();
+});
+
+businessNameInput.addEventListener('blur', saveBusinessName);
+businessNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') saveBusinessName();
+});
+
+function saveBusinessName() {
+    const newName = businessNameInput.value.trim() || 'Billetera Virtual';
+    branding.name = newName;
+    walletTitleEl.innerText = newName;
+    walletTitleEl.style.display = 'inline-block';
+    businessNameInput.style.display = 'none';
+    StateManager.saveBranding(branding);
+    showToast('Nombre de empresa actualizado', 'success');
+}
 
 const loginCardElement = document.querySelector('.login-card');
 const mainApp = document.getElementById('main-app');
@@ -433,7 +537,8 @@ function exportToCSV() {
     }
 
     // Header row
-    let csvContent = "Fecha,Descripción,Categoría,Tipo,Monto\n";
+    let csvContent = `REPORTE FINANCIERO: ${branding.name}\n`;
+    csvContent += "Fecha,Descripción,Categoría,Tipo,Monto\n";
 
     // Data rows
     let totalBalance = 0;
@@ -454,7 +559,7 @@ function exportToCSV() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Reporte_Billetera_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute("download", `Reporte_${branding.name.replace(/\s+/g, '_')}_${new Date().toLocaleDateString()}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -471,8 +576,9 @@ function exportBackup() {
         budget_business: StateManager.getBudget('business'),
         goals_personal: StateManager.getGoals('personal'),
         goals_business: StateManager.getGoals('business'),
+        branding: branding,
         pin: SECRET_PIN,
-        version: "1.1"
+        version: "1.2"
     };
 
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
@@ -500,6 +606,7 @@ function importBackup(e) {
             if (data.budget_business) localStorage.setItem('budget_business', data.budget_business);
             if (data.goals_personal) localStorage.setItem('goals_personal', JSON.stringify(data.goals_personal));
             if (data.goals_business) localStorage.setItem('goals_business', JSON.stringify(data.goals_business));
+            if (data.branding) localStorage.setItem('wallet_branding', JSON.stringify(data.branding));
             if (data.pin) {
                 SECRET_PIN = data.pin;
                 localStorage.setItem('wallet_pin', data.pin);
@@ -566,6 +673,7 @@ function init() {
     updateValues();
     renderGoals();
     checkRecurringTransactions();
+    initBranding();
 }
 
 // Helper to format 24h to 12h string
