@@ -448,19 +448,21 @@ select:focus {
 .primary-btn {
     width: 100%;
     padding: 14px;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, #8b5cf6 0%, #0ea5e9 100%);
     color: white;
     border: none;
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
     margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .primary-btn:hover {
-    background: #4f46e5;
+    opacity: 0.9;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .primary-btn:active {
