@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billetera Virtual Artigravity</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+
+<body>
+    <div id="login-overlay" class="login-overlay">
+        <div class="glass-section login-card">
+            <div class="lock-icon">🔒</div>
+            <h2>Billetera Protegida</h2>
+            <p>Introduce tu PIN para acceder</p>
+            <div class="pin-inputs">
+                <input type="password" id="pin" maxlength="4" placeholder="••••" autofocus>
+            </div>
+            <p id="login-error" class="error-text" style="display: none;">PIN Incorrecto. Intenta de nuevo.</p>
+            <button id="login-btn" class="primary-btn">Desbloquear</button>
+        </div>
+    </div>
+
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="app-container" id="main-app" style="display: none;">
+        <header class="wallet-header">
+            <div class="top-bar">
+                <div class="user-profile">
+                    <div class="avatar">A</div>
+                    <div class="user-info">
+                        <span class="user-name">Admin</span>
+                        <div class="user-actions">
+                            <button id="export-backup" class="mini-text-btn" title="Descargar Copia de Seguridad">☁️⬇️
+                                Guardar Nube</button>
+                            <button id="import-trigger" class="mini-text-btn" title="Subir Copia de Seguridad">☁️⬆️
+                                Cargar Nube</button>
+                            <input type="file" id="import-backup" style="display: none;" accept=".json">
+                            <button id="load-demo" class="mini-text-btn" title="Cargar Datos de Prueba">🚀 Demo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="wallet-controls">
+                    <select id="currency-selector" class="currency-select" title="Cambiar Moneda">
+                        <option value="$">$ USD</option>
+                        <option value="€">€ EUR</option>
+                        <option value="L">L HNL</option>
+                        <option value="Q">Q GTQ</option>
+                    </select>
+                    <select id="wallet-selector" class="wallet-select">
+                        <option value="personal">🏠 Gastos Personales</option>
+                        <option value="business">💼 Gastos de Empresa</option>
+                    </select>
+                    <button id="logout-btn" class="icon-btn" title="Bloquear Billetera">🔐</button>
+                </div>
+            </div>
+            <h1 id="current-wallet-title">Billetera Virtual</h1>
+            <div class="balance-card">
+                <div class="balance-info">
+                    <p class="balance-label">Balance Total</p>
+                    <h2 id="total-balance">$0.00</h2>
+                </div>
+                <div class="budget-info">
+                    <p class="balance-label">Presupuesto Mensual</p>
+                    <input type="number" id="budget-input" placeholder="0.00" class="mini-input">
+                </div>
+            </div>
+
+            <div class="chart-container" id="chart-card">
+                <canvas id="expense-chart"></canvas>
+            </div>
+
+            <div id="advice-box" class="glass-section advice-card">
+                <span class="advice-icon">💡</span>
+                <p id="advice-text">Introduce un presupuesto para recibir consejos.</p>
+            </div>
+
+            <div class="summary-row">
+                <div class="summary-item income">
+                    <span class="dot"></span>
+                    <p>Ingresos: <strong id="total-income">$0.00</strong></p>
+                </div>
+                <div class="summary-item expense">
+                    <span class="dot"></span>
+                    <p>Gastos: <strong id="total-expense">$0.00</strong></p>
+                </div>
+            </div>
+        </header>
+
+        <section class="action-grid">
+            <div class="glass-section add-transaction">
+                <h3>Añadir Transacción</h3>
+                <form id="transaction-form" class="transaction-form">
+                    <div id="toast-container-local" class="toast-container-local"></div>
+                    <div class="input-group">
+                        <label for="description">Descripción</label>
+                        <input type="text" id="description" placeholder="Añade una descripción..." required>
+                    </div>
+                    <div class="input-group">
+                        <label for="category">Categoría</label>
+                        <select id="category" required>
+                            <option value="🍔 Comida">🍔 Comida</option>
+                            <option value="🏠 Renta">🏠 Renta</option>
+                            <option value="🚗 Transporte">🚗 Transporte</option>
+                            <option value="👔 Trabajo">👔 Trabajo</option>
+                            <option value="💡 Otros">💡 Otros</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="amount">Monto ($)</label>
+                        <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="type">Tipo</label>
+                        <select id="type" required>
+                            <option value="income">Ingreso (+)</option>
+                            <option value="expense">Gasto (-)</option>
+                        </select>
+                    </div>
+                    <div class="input-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="is-recurrent"> 🔄 ¿Repetir cada mes?
+                        </label>
+                    </div>
+                    <div id="recurring-options"
+                        style="display: none; margin-bottom: 1.2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                                <label for="recurring-day">Día del mes</label>
+                                <input type="number" id="recurring-day" min="1" max="31">
+                            </div>
+                            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                                <label for="recurring-time">Hora</label>
+                                <input type="time" id="recurring-time">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="primary-btn">Registrar Movimiento</button>
+                </form>
+            </div>
+
+            <div class="glass-section savings-goals">
+                <h3>🎯 Mis Metas de Ahorro</h3>
+                <div class="goal-form">
+                    <input type="text" id="goal-name" placeholder="Ej: Vacaciones">
+                    <input type="number" id="goal-target" placeholder="Monto objetivo">
+                    <button id="add-goal-btn" class="icon-btn">➕</button>
+                </div>
+                <div id="goals-container" class="goals-list">
+                    <!-- Goals will be injected here -->
+                </div>
+            </div>
+
+            <div class="glass-section transaction-history">
+                <div class="history-header">
+                    <h3>Historial</h3>
+                    <div class="history-actions">
+                        <button id="export-btn" class="text-btn success-link">Exportar Reporte (CSV)</button>
+                        <button id="clear-all" class="text-btn">Limpiar todo</button>
+                    </div>
+                </div>
+                <ul id="transaction-list" class="list-container">
+                    <!-- Transactions will be injected here -->
+                    <p class="empty-state">No hay transacciones registradas.</p>
+                </ul>
+            </div>
+        </section>
+        <footer class="app-footer">
+            <p>Desarrollado por <strong>Accion SEO</strong> - Soporte Técnico Activo</p>
+        </footer>
+    </main>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+
+</html>
